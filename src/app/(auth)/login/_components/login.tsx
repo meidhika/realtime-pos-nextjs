@@ -37,7 +37,6 @@ export default function Login() {
     Object.entries(data).forEach(([key, value]) => {
       formData.append(key, value);
     });
-
     startTransition(() => {
       loginAction(formData);
     });
