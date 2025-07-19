@@ -1,4 +1,5 @@
 "use client";
+
 import FormInput from "@/components/common/form-input";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,14 +13,13 @@ import { Form } from "@/components/ui/form";
 import {
   INITIAL_LOGIN_FORM,
   INITIAL_STATE_LOGIN_FORM,
-} from "@/constants/auth-constants";
+} from "@/constants/auth-constant";
 import { LoginForm, loginSchemaForm } from "@/validations/auth-validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { startTransition, useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { login } from "../actions";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
 
 export default function Login() {
   const form = useForm<LoginForm>({
@@ -37,15 +37,17 @@ export default function Login() {
     Object.entries(data).forEach(([key, value]) => {
       formData.append(key, value);
     });
-    startTransition(() => loginAction(formData));
+
+    startTransition(() => {
+      loginAction(formData);
+    });
   });
 
   useEffect(() => {
     if (loginState?.status === "error") {
-      toast.error("Login Failed", {
-        description: loginState.errors?._form?.[0],
+      startTransition(() => {
+        loginAction(null);
       });
-      startTransition(() => loginAction(null));
     }
   }, [loginState]);
 
@@ -59,18 +61,18 @@ export default function Login() {
         <Form {...form}>
           <form onSubmit={onSubmit} className="space-y-4">
             <FormInput
-              type="email"
               form={form}
               name="email"
               label="Email"
-              placeholder="Insert Your Email Here"
+              placeholder="Insert email here"
+              type="email"
             />
             <FormInput
-              type="password"
               form={form}
               name="password"
               label="Password"
-              placeholder="**********"
+              placeholder="******"
+              type="password"
             />
             <Button type="submit">
               {isPendingLogin ? <Loader2 className="animate-spin" /> : "Login"}
