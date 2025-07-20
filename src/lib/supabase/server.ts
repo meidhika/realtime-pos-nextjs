@@ -1,4 +1,4 @@
-import { environtment } from "@/configs/environment";
+import { environment } from "@/configs/environment";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
@@ -11,7 +11,7 @@ export async function createClient({
 }: CreateClientOptions = {}) {
   const cookieStore = await cookies();
   const { SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY } =
-    environtment;
+    environment;
 
   return createServerClient(
     SUPABASE_URL!,

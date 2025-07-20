@@ -34,14 +34,7 @@ import { useAuthStore } from "@/stores/auth-store";
 export default function AppSidebar() {
   const { isMobile } = useSidebar();
   const pathname = usePathname();
-  // const profile = {
-  //   name: "Meidhika NS",
-  //   role: "admin",
-  //   avatar_url:
-  //     "https://thxincyayxizokdrsbcn.supabase.co/storage/v1/object/public/images/users/icons8-node-js-500.png",
-  // };
   const profile = useAuthStore((state) => state.profile);
-  console.log(profile);
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -95,7 +88,9 @@ export default function AppSidebar() {
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage src={profile.avatar_url} alt={profile.name} />
-                    <AvatarFallback className="rounded-lg">A</AvatarFallback>
+                    <AvatarFallback className="rounded-lg">
+                      {profile.name?.charAt(0)}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="leading-tight">
                     <h4 className="truncate font-medium">{profile.name}</h4>

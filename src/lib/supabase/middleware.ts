@@ -1,4 +1,4 @@
-import { environtment } from "@/configs/environment";
+import { environment } from "@/configs/environment";
 import { createServerClient } from "@supabase/ssr";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -7,7 +7,7 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
-  const { SUPABASE_URL, SUPABASE_ANON_KEY } = environtment;
+  const { SUPABASE_URL, SUPABASE_ANON_KEY } = environment;
 
   const supabase = createServerClient(SUPABASE_URL!, SUPABASE_ANON_KEY!, {
     cookies: {
