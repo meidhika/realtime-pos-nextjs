@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Table } from "@/validations/table-validation";
 import { HEADER_TABLE_TABLE } from "@/constants/table-constant";
+import DialogCreateTable from "./dialog-create-table";
 
 export default function TableManagement() {
   const supabase = createClient();
@@ -74,10 +75,10 @@ export default function TableManagement() {
         </div>,
         table.capacity,
         <div
-          className={cn("px-2 py-1 rounded-full text-white w-fit capitalize ", {
+          className={cn("px-2 py-1 rounded-full text-white w-fit capitalize", {
             "bg-green-600": table.status === "available",
-            "bg-red-500": table.status === "unavailable",
-            "bg-yellow-500": table.status === "occupied",
+            "bg-red-600": table.status === "unavailable",
+            "bg-yellow-600": table.status === "reserved",
           })}
         >
           {table.status}
@@ -131,14 +132,14 @@ export default function TableManagement() {
         <h1 className="text-2xl font-bold">Table Management</h1>
         <div className="flex gap-2">
           <Input
-            placeholder="Search by name, capacity, or status"
+            placeholder="Search by name, capacity and status"
             onChange={(e) => handleChangeSearch(e.target.value)}
           />
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline">Create</Button>
             </DialogTrigger>
-            {/* <DialogCreateMenu refetch={refetch} /> */}
+            <DialogCreateTable refetch={refetch} />
           </Dialog>
         </div>
       </div>
@@ -152,18 +153,6 @@ export default function TableManagement() {
         onChangePage={handleChangePage}
         onChangeLimit={handleChangeLimit}
       />
-      {/* <DialogUpdateMenu
-        open={selectedAction !== null && selectedAction.type === "update"}
-        currentData={selectedAction?.data}
-        refetch={refetch}
-        handleChangeAction={handleChangeAction}
-      />
-      <DialogDeleteMenu
-        open={selectedAction !== null && selectedAction.type === "delete"}
-        currentData={selectedAction?.data}
-        refetch={refetch}
-        handleChangeAction={handleChangeAction}
-      /> */}
     </div>
   );
 }
