@@ -7,14 +7,17 @@ import useDebounce from "@/hooks/use-debounce";
 import { convertIDR } from "@/lib/utils";
 import { Cart } from "@/types/order";
 import { Menu } from "@/validations/menu-validation";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import { Dispatch, SetStateAction, use } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 export default function CartSection({
   order,
   carts,
-  setCart,
+  setCarts,
   onAddToCart,
+  isLoading,
+  onOrder,
 }: {
   order:
     | {
@@ -25,12 +28,15 @@ export default function CartSection({
     | undefined
     | null;
   carts: Cart[];
-  setCart: Dispatch<SetStateAction<Cart[]>>;
-  onAddToCart: (item: Menu, type: "increment" | "decrement") => void;
+  setCarts: Dispatch<SetStateAction<Cart[]>>;
+  onAddToCart: (item: Menu, type: "decrement" | "increment") => void;
+  isLoading: boolean;
+  onOrder: () => void;
 }) {
   const debounce = useDebounce();
+
   const handleAddNote = (id: string, notes: string) => {
-    setCart(
+    setCarts(
       carts.map((item) => (item.menu_id === id ? { ...item, notes } : item))
     );
   };
@@ -55,12 +61,12 @@ export default function CartSection({
         )}
         <Separator />
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold ">Cart</h3>
+          <h3 className="text-lg font-semibold">Cart</h3>
           {carts.length > 0 ? (
             carts?.map((item: Cart) => (
-              <div key={item.menu_id} className="space-y-2 ">
-                <div className="flex justify-between items-center ">
-                  <div className="flex items-center gap-2 ">
+              <div key={item.menu.id} className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
                     <Image
                       src={item.menu.image_url as string}
                       alt={item.menu.name}
@@ -83,7 +89,7 @@ export default function CartSection({
                     className="w-full"
                     onChange={(e) =>
                       debounce(
-                        () => handleAddNote(item.menu_id, e.target.value),
+                        () => handleAddNote(item.menu!.id, e.target.value),
                         500
                       )
                     }
@@ -92,7 +98,7 @@ export default function CartSection({
                     <Button
                       className="font-semibold cursor-pointer"
                       variant="outline"
-                      onClick={() => onAddToCart(item.menu, "decrement")}
+                      onClick={() => onAddToCart(item.menu!, "decrement")}
                     >
                       -
                     </Button>
@@ -100,7 +106,7 @@ export default function CartSection({
                     <Button
                       className="font-semibold cursor-pointer"
                       variant="outline"
-                      onClick={() => onAddToCart(item.menu, "increment")}
+                      onClick={() => onAddToCart(item.menu!, "increment")}
                     >
                       +
                     </Button>
@@ -109,8 +115,14 @@ export default function CartSection({
               </div>
             ))
           ) : (
-            <p className="text-sm text-muted-foreground">Cart is empty</p>
+            <p className="text-sm">No item in cart</p>
           )}
+          <Button
+            onClick={() => onOrder()}
+            className="w-full font-semibold bg-teal-500 hover:bg-teal-600 cursor-pointer text-white"
+          >
+            {isLoading ? <Loader2 className="animate-spin" /> : "Order"}
+          </Button>
         </div>
       </CardContent>
     </Card>

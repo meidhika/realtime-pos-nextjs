@@ -10,9 +10,11 @@ import { toast } from "sonner";
 import CardMenu from "./card-menu";
 import LoadingCardMenu from "./loading-card-menu";
 import CartSection from "./cart";
-import { useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 import { Cart } from "@/types/order";
 import { Menu } from "@/validations/menu-validation";
+import { addOrderItem } from "../../../actions";
+import { INITIAL_STATE_ACTION } from "@/constants/general-constant";
 
 export default function AddOrderItem({ id }: { id: string }) {
   const supabase = createClient();
@@ -67,14 +69,14 @@ export default function AddOrderItem({ id }: { id: string }) {
     enabled: !!id,
   });
 
-  const [carts, setCart] = useState<Cart[]>([]);
+  const [carts, setCarts] = useState<Cart[]>([]);
 
   const handleAddToCart = (menu: Menu, action: "increment" | "decrement") => {
     const existingItem = carts.find((item) => item.menu_id === menu.id);
     if (existingItem) {
       if (action === "decrement") {
         if (existingItem.quantity > 1) {
-          setCart(
+          setCarts(
             carts.map((item) =>
               item.menu_id === menu.id
                 ? {
@@ -86,10 +88,10 @@ export default function AddOrderItem({ id }: { id: string }) {
             )
           );
         } else {
-          setCart(carts.filter((item) => item.menu_id !== menu.id));
+          setCarts(carts.filter((item) => item.menu_id !== menu.id));
         }
       } else {
-        setCart(
+        setCarts(
           carts.map((item) =>
             item.menu_id === menu.id
               ? {
@@ -102,11 +104,29 @@ export default function AddOrderItem({ id }: { id: string }) {
         );
       }
     } else {
-      setCart([
+      setCarts([
         ...carts,
         { menu_id: menu.id, quantity: 1, total: menu.price, notes: "", menu },
       ]);
     }
+  };
+
+  const [addOrderItemState, addOrderItemAction, isPendingAddOrderItem] =
+    useActionState(addOrderItem, INITIAL_STATE_ACTION);
+
+  const handleOrder = async () => {
+    const data = {
+      order_id: id,
+      items: carts.map((item) => ({
+        order_id: order?.id ?? "",
+        ...item,
+        status: "pending",
+      })),
+    };
+
+    startTransition(() => {
+      addOrderItemAction(data);
+    });
   };
 
   return (
@@ -153,8 +173,10 @@ export default function AddOrderItem({ id }: { id: string }) {
         <CartSection
           order={order}
           carts={carts}
-          setCart={setCart}
+          setCarts={setCarts}
           onAddToCart={handleAddToCart}
+          isLoading={isPendingAddOrderItem}
+          onOrder={handleOrder}
         />
       </div>
     </div>

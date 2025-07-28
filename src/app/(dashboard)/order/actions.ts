@@ -2,10 +2,14 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { FormState } from "@/types/general";
-import { OrderFormState } from "@/types/order";
+import { Cart, OrderFormState } from "@/types/order";
 import { orderFormSchema } from "@/validations/order-validation";
+import { redirect } from "next/navigation";
 
-export async function createOrder(prevState: FormState, formData: FormData) {
+export async function createOrder(
+  prevState: OrderFormState,
+  formData: FormData
+) {
   const validatedFields = orderFormSchema.safeParse({
     customer_name: formData.get("customer_name"),
     table_id: formData.get("table_id"),
@@ -24,7 +28,7 @@ export async function createOrder(prevState: FormState, formData: FormData) {
 
   const supabase = await createClient();
 
-  const orderId = `WPUCAFE-${Date.now()}`;
+  const orderId = `NSSTORE-${Date.now()}`;
 
   const [orderResult, tableResult] = await Promise.all([
     supabase.from("orders").insert({
@@ -66,10 +70,11 @@ export async function createOrder(prevState: FormState, formData: FormData) {
 }
 
 export async function updateReservation(
-  prevState: OrderFormState,
+  prevState: FormState,
   formData: FormData
 ) {
   const supabase = await createClient();
+
   const [orderResult, tableResult] = await Promise.all([
     supabase
       .from("orders")
@@ -105,4 +110,29 @@ export async function updateReservation(
   return {
     status: "success",
   };
+}
+
+export async function addOrderItem(
+  prevState: OrderFormState,
+  data: {
+    order_id: string;
+    items: Cart[];
+  }
+) {
+  const supabase = await createClient();
+
+  const payload = data.items.map(({ total, menu, ...item }) => item);
+
+  const { error } = await supabase.from("orders_menus").insert(payload);
+  if (error) {
+    return {
+      status: "error",
+      errors: {
+        ...prevState,
+        _form: [],
+      },
+    };
+  }
+
+  redirect(`/order/${data.order_id}`);
 }
