@@ -47,7 +47,7 @@ export default function DetailOrder({ id }: { id: string }) {
         .order("status");
 
       if (result.error)
-        toast.error("Get Order Menu data failed", {
+        toast.error("Get order menu data failed", {
           description: result.error.message,
         });
 
@@ -69,7 +69,7 @@ export default function DetailOrder({ id }: { id: string }) {
             className="rounded"
           />
           <div className="flex flex-col">
-            {item.menus.name} X {item.quantity}
+            {item.menus.name} x {item.quantity}
             <span className="text-xs text-muted-foreground">
               {item.notes || "No Notes"}
             </span>
@@ -99,9 +99,9 @@ export default function DetailOrder({ id }: { id: string }) {
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex items-center justify-between w-full gap-4">
+      <div className="flex items-center justify-between gap-4 w-full">
         <h1 className="text-2xl font-bold">Detail Order</h1>
-        <Link href="">
+        <Link href={`/order/${id}/add`}>
           <Button>Add Order Item</Button>
         </Link>
       </div>
