@@ -32,7 +32,7 @@ export default function DetailOrder({ id }: { id: string }) {
     queryFn: async () => {
       const result = await supabase
         .from("orders")
-        .select("id, customer_name, status, payment_url, tables (name, id)")
+        .select("id, customer_name, status, payment_token, tables (name, id)")
         .eq("order_id", id)
         .single();
 
@@ -82,6 +82,7 @@ export default function DetailOrder({ id }: { id: string }) {
     Object.entries(data).forEach(([Key, value]) => {
       formData.append(Key, value);
     });
+
     startTransition(() => {
       updateStatusOrderAction(formData);
     });
@@ -135,8 +136,8 @@ export default function DetailOrder({ id }: { id: string }) {
             <Button
               variant="ghost"
               className={cn(
-                "size-8 data-[state=open]:bg-muted text-muted-foreground flex",
-                { hidde: item.status === "served" }
+                "data-[state=open]:bg-muted text-muted-foreground flex size-8",
+                { hidden: item.status === "served" }
               )}
               size="icon"
             >
@@ -149,7 +150,6 @@ export default function DetailOrder({ id }: { id: string }) {
               return (
                 item.status === status && (
                   <DropdownMenuItem
-                    className="capitalize"
                     key={status}
                     onClick={() =>
                       handleUpdateStatusOrder({
@@ -157,6 +157,7 @@ export default function DetailOrder({ id }: { id: string }) {
                         status: nextStatus,
                       })
                     }
+                    className="capitalize"
                   >
                     {nextStatus}
                   </DropdownMenuItem>
