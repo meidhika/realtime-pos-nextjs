@@ -1,7 +1,8 @@
-export default function AdminDashboardPage() {
-  return (
-    <div>
-      <h1>Admin Dashboard</h1>
-    </div>
-  );
+import Dashboard from "./_components/dashboard";
+
+export const metadata = {
+  title: "NS Store | Dashboard",
+};
+export default function DashboardPage() {
+  return <Dashboard />;
 }
