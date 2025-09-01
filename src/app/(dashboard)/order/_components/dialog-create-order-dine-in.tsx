@@ -24,10 +24,12 @@ import FormSelect from "@/components/common/form-select";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
-export default function DialogCreateOrder({
+export default function DialogCreateOrderDineIn({
   tables,
+  closeDialog,
 }: {
   tables: Table[] | undefined | null;
+  closeDialog: () => void;
 }) {
   const form = useForm<OrderForm>({
     resolver: zodResolver(orderFormSchema),
@@ -58,7 +60,7 @@ export default function DialogCreateOrder({
     if (createOrderState?.status === "success") {
       toast.success("Create Order Success");
       form.reset();
-      document.querySelector<HTMLButtonElement>('[data-state="open"]')?.click();
+      closeDialog();
     }
   }, [createOrderState]);
 
@@ -66,11 +68,11 @@ export default function DialogCreateOrder({
     <DialogContent className="sm:max-w-[425px] max-h-[90vh]">
       <Form {...form}>
         <DialogHeader>
-          <DialogTitle>Create Order</DialogTitle>
+          <DialogTitle>Create Order Dine In</DialogTitle>
           <DialogDescription>Add a new order from customer</DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-4 max-h-[50vh] px-1 overflow-y-auto">
+          <div className="space-y-4 max-h-[50vh] px-1 overflow-y-auto p-1">
             <FormInput
               form={form}
               name="customer_name"
