@@ -77,11 +77,14 @@ export default function Dashboard() {
         0
       );
 
-      const growthRate = (
-        ((totalRevenueThisMonth - totalRevenueLastMonth) /
-          totalRevenueLastMonth) *
-        100
-      ).toFixed(2);
+      const growthRate =
+        totalRevenueLastMonth > 0
+          ? (
+              ((totalRevenueThisMonth - totalRevenueLastMonth) /
+                totalRevenueLastMonth) *
+              100
+            ).toFixed(2)
+          : "0";
 
       const daysInData = new Set(
         (dataThisMonth ?? []).map((item) =>
